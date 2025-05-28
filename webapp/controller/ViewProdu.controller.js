@@ -1,0 +1,177 @@
+sap.ui.define(
+  [
+    "sap/ui/core/mvc/Controller",
+    "sap/ui/model/json/JSONModel",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
+    "com/saperp/m/manageproducts/model/formatter",
+    "sap/ui/Device",
+  ],
+  (Controller, JSONModel, Filter, FilterOperator, formatter, Device) => {
+    "use strict";
+
+    return Controller.extend(
+      "com.saperp.m.manageproducts.controller.ViewProdu",
+      {
+        formatter: formatter,
+        ITEMS_PER_PAGE: 5,
+
+        onInit() {
+          this.iSkip = 0;
+          this.oViewModel = new JSONModel({
+            includeSupplier: true,
+            searchVisible: true,
+            rangeText: "Affichage de 0-0 sur 0 éléments",
+            currentPage: 1,
+            totalPages: 1,
+            prevEnabled: false,
+            nextEnabled: false,
+            selectedProducts: {},
+            isPortrait: Device.orientation.portrait,
+          });
+          this.getView().setModel(this.oViewModel, "viewModel");
+          this.rebindTable();
+
+          //Listen for orientation changes
+          Device.orientation.attachHandler(this.onOrientationChange.bind(this));
+        },
+
+        isSelected(sId) {
+          const oSelectedProducts =
+            this.oViewModel.getProperty("/selectedProducts") || {};
+          return !!oSelectedProducts[sId];
+        },
+
+        rebindTable(aFilters = []) {
+          const oTable = this.byId("productsTable");
+          const oTemplate = oTable.getBindingInfo("items").template;
+          oTable.bindItems({
+            path: "/Products",
+            template: oTemplate,
+            parameters: {
+              expand: "Supplier/Name",
+              top: this.ITEMS_PER_PAGE,
+              skip: this.iSkip,
+              $inlinecount: "allpages",
+            },
+            filters: aFilters,
+          });
+
+          const oBinding = oTable.getBinding("items");
+          if (oBinding) {
+            oBinding.attachEventOnce("dataReceived", (oEvent) => {
+              const oData = oEvent.getParameter("data");
+              if (!oData) {
+                console.error("Erreur lors du chargement des données");
+                return;
+              }
+              const iTotalCount = parseInt(oData.__count, 10) || 0;
+              const iTotalPages =
+                Math.ceil(iTotalCount / this.ITEMS_PER_PAGE) || 1;
+              const iCurrentPage =
+                Math.floor(this.iSkip / this.ITEMS_PER_PAGE) + 1;
+              const iStart = this.iSkip + 1;
+              const iEnd = Math.min(
+                this.iSkip + this.ITEMS_PER_PAGE,
+                iTotalCount
+              );
+
+              this.oViewModel.setProperties({
+                rangeText: `Affichage de ${iStart}-${iEnd} sur ${iTotalCount} éléments`,
+                currentPage: iCurrentPage,
+                totalPages: iTotalPages,
+                prevEnabled: this.iSkip > 0,
+                nextEnabled: this.iSkip + this.ITEMS_PER_PAGE < iTotalCount,
+              });
+            });
+          }
+        },
+
+        onCheckboxSelect(oEvent) {
+          const oCheckBox = oEvent.getSource();
+          const sProductId = oCheckBox.getBindingContext().getProperty("ID");
+          const bSelected = oEvent.getParameter("selected");
+          const oSelectedProducts =
+            this.oViewModel.getProperty("/selectedProducts") || {};
+          oSelectedProducts[sProductId] = bSelected;
+          this.oViewModel.setProperty("/selectedProducts", oSelectedProducts);
+        },
+
+        onLiveSearch(oEvent) {
+          this.iSkip = 0;
+          const sQuery = oEvent.getSource().getValue().trim();
+          const aFilters = sQuery
+            ? [
+                new Filter({
+                  filters: [
+                    new Filter("Name", FilterOperator.Contains, sQuery),
+                    new Filter("Description", FilterOperator.Contains, sQuery),
+                  ],
+                  and: false,
+                }),
+              ]
+            : [];
+          this.rebindTable(aFilters);
+        },
+
+        onNextPage() {
+          this.iSkip += this.ITEMS_PER_PAGE;
+          this.rebindTable(this.getCurrentFilters());
+        },
+
+        onPreviousPage() {
+          this.iSkip = Math.max(this.iSkip - this.ITEMS_PER_PAGE, 0);
+          this.rebindTable(this.getCurrentFilters());
+        },
+
+        getCurrentFilters() {
+          const sQuery = this.byId("searchField").getValue().trim();
+          return sQuery
+            ? [
+                new Filter({
+                  filters: [
+                    new Filter("Name", FilterOperator.Contains, sQuery),
+                    new Filter("Description", FilterOperator.Contains, sQuery),
+                  ],
+                  and: false,
+                }),
+              ]
+            : [];
+        },
+
+        onSupplierToggle(oEvent) {
+          this.oViewModel.setProperty(
+            "/includeSupplier",
+            oEvent.getSource().getSelected()
+          );
+        },
+
+        onOrientationChange(oEvent) {
+          this.oViewModel.setProperty("/isPortrait", oEvent.portrait);
+        },
+
+        onBeforeRendering() {
+          // Update the view model with the current orientation
+          this.oViewModel.setProperty(
+            "/isPortrait",
+            Device.orientation.portrait
+          );
+        },
+
+        onExit() {
+          // Detach orientation change handler to avoid memory leaks
+          Device.orientation.detachHandler(this.onOrientationChange, this);
+        },
+
+        onProductClick(oEvent) {
+          var oContext = oEvent.getSource().getBindingContext();
+          var sProductId = oContext.getProperty("ID");
+          var oRouter = this.getOwnerComponent().getRouter();
+          oRouter.navTo("RouteProduct", {
+            productId: sProductId,
+          });
+        },
+      }
+    );
+  }
+);

@@ -1,0 +1,22 @@
+<mvc:View controllerName="com.saperp.m.manageproducts.controller.Product"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout.form">
+    <Page id="productPage" title="{path: 'Name', formatter: '.formatter.formatTitle'}">
+        <content>
+            <layout:SimpleForm id="productForm" editable="false" layout="ResponsiveGridLayout">
+                <Label id="_IDGenLabel1" text="ID" />
+                <Text id="_IDGenText11" text="{ID}" />
+                <Label id="_IDGenLabel2" text="Name" />
+                <Text id="_IDGenText12" text="{Name}" />
+                <Label id="_IDGenLabel3" text="Description" />
+                <Text id="_IDGenText13" text="{Description}" />
+                <Label id="_IDGenLabel4" text="Price" />
+                <ObjectNumber id="_IDGenObjectNumber" number="{Price}" unit="EUR" />
+                <Label id="_IDGenLabel5" text="Supplier" />
+                <Text id="_IDGenText14" text="{Supplier/Name}" />
+            </layout:SimpleForm>
+        </content>
+    </Page>
+</mvc:View>
