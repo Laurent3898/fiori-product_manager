@@ -1,6 +1,12 @@
 sap.ui.define(["sap/ui/core/format/DateFormat"], function (DateFormat) {
   "use strict";
   return {
+    formatTitle: function (sId) {
+      if (!sId) {
+        return "Product N/A"; // Gestion des cas où l'ID est undefined ou null
+      }
+      return "Product " + sId;
+    },
     formatRatingState: function (iRating) {
       if (iRating < 3) {
         return "Warning"; // Yellow
