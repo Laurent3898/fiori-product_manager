@@ -22,7 +22,7 @@
                                 <Label id="_IDGenLabel3" text="Description" />
                                 <Text id="_IDGenText13" text="{Description}" />
                                 <Label id="_IDGenLabel4" text="Price" />
-                                <ObjectNumber id="_IDGenObjectNumber" number="{Price}" unit="EUR" />
+                                <ObjectNumber id="_IDGenObjectNumber" number="{Price}" unit="€" />
                                 <Label id="_IDGenLabel6" text="{i18n>Rating}" />
                                 <ObjectStatus id="_IDGenObjectStatus1" 
                                               text="{path: 'Rating', formatter: '.formatter.formatRatingText'}" 
@@ -37,9 +37,35 @@
 
                     <uxap:ObjectPageSubSection id="_IDGenObjectPageSubSection2" title="Supplier Details">
                         <uxap:blocks>
-                            <Text id="_IDGenText14" text="{Supplier/Name}" />
+                            <VBox id="_IDGenVBox1">
+                                <HBox id="_IDGenHBox2">
+                                    <Label id="_IDGenLabel" text="Supplier Name : " labelFor="_IDGenText14" />
+                                    <Text id="_IDGenText14" text="{Supplier/Name}" />
+                                </HBox>
+                                <HBox id="_IDGenHBox3">
+                                    <Label id="_IDGenLabel5" text="Street : " labelFor="_IDGenText17" />
+                                    <Text id="_IDGenText17" text="{Supplier/Address/Street}" />
+                                </HBox>
+                                <HBox id="_IDGenHBox4">
+                                    <Label id="_IDGenLabel9" text="City : " labelFor="_IDGenText18" />
+                                    <Text id="_IDGenText18" text="{Supplier/Address/City}" />
+                                </HBox>
+                                <HBox id="_IDGenHBox5">
+                                    <Label id="_IDGenLabel10" text="State : " labelFor="_IDGenText19" />
+                                    <Text id="_IDGenText19" text="{Supplier/Address/State}" />
+                                </HBox>
+                                <HBox id="_IDGenHBox6">
+                                    <Label id="_IDGenLabel11" text="ZipCode : " labelFor="_IDGenText20" />
+                                    <Text id="_IDGenText20" text="{Supplier/Address/ZipCode}" />
+                                </HBox>
+                                <HBox id="_IDGenHBox7">
+                                    <Label id="_IDGenLabel12" text="Country : " labelFor="_IDGenText21" />
+                                    <Text id="_IDGenText21" text="{Supplier/Address/Country}" />
+                                </HBox>
+                            </VBox>
                         </uxap:blocks>
                     </uxap:ObjectPageSubSection>
+
                 </uxap:subSections>
             </uxap:ObjectPageSection>
         </uxap:sections>

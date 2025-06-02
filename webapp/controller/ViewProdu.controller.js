@@ -55,6 +55,14 @@ sap.ui.define(
               $inlinecount: "allpages",
             },
             filters: aFilters,
+            events: {
+              dataRequested: () => {
+                oTable.setBusy(true);
+              },
+              dataReceived: (oData) => {
+                oTable.setBusy(false);
+              },
+            },
           });
 
           const oBinding = oTable.getBinding("items");

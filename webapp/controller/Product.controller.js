@@ -4,7 +4,7 @@ sap.ui.define(
     "use strict";
 
     return Controller.extend("com.saperp.m.manageproducts.controller.Product", {
-      formatter: formatter, // Assigner le formateur pour les bindings de la vue
+      formatter: formatter,
       onInit: function () {
         var oRouter = this.getOwnerComponent().getRouter();
         oRouter
@@ -19,7 +19,25 @@ sap.ui.define(
           parameters: {
             expand: "Supplier, Category",
           },
+          events: {
+            change: this._onBindingChange.bind(this),
+            dataRequested: function () {
+              oView.setBusy(true);
+            },
+            dataReceived: function (oEvent) {
+              oView.setBusy(false);
+            },
+          },
         });
+      },
+
+      _onBindingChange: function () {
+        var oView = this.getView();
+        var oElementBinding = oView.getElementBinding();
+        if (!oElementBinding.getBoundContext()) {
+          var oRouter = this.getOwnerComponent().getRouter();
+          oRouter.navTo("RouteProductNotFound");
+        }
       },
     });
   }

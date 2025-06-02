@@ -98,6 +98,11 @@
           "name": "RouteProduct",
           "pattern": "Product/{productId}",
           "target": ["TargetProduct"]
+        },
+        {
+          "name": "RouteProductNotFound",
+          "pattern": "ProductNotFound",
+          "target": ["TargetProductNotFound"]
         }
       ],
       "targets": {
@@ -108,6 +113,10 @@
         "TargetProduct": {
           "id": "Product",
           "name": "Product"
+        },
+        "TargetProductNotFound": {
+          "id": "ProductNotFound",
+          "name": "ProductNotFound"
         }
       }
     },
