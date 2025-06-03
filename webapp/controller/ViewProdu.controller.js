@@ -6,8 +6,17 @@ sap.ui.define(
     "sap/ui/model/FilterOperator",
     "com/saperp/m/manageproducts/model/formatter",
     "sap/ui/Device",
+    "sap/ui/core/Fragment",
   ],
-  (Controller, JSONModel, Filter, FilterOperator, formatter, Device) => {
+  (
+    Controller,
+    JSONModel,
+    Filter,
+    FilterOperator,
+    formatter,
+    Device,
+    Fragment
+  ) => {
     "use strict";
 
     return Controller.extend(
@@ -178,6 +187,71 @@ sap.ui.define(
           oRouter.navTo("RouteProduct", {
             productId: sProductId,
           });
+        },
+
+        getCurrentFilters: function () {
+          var sQuery = this.byId("searchField").getValue().trim();
+          return sQuery
+            ? [
+                new sap.ui.model.Filter({
+                  filters: [
+                    new sap.ui.model.Filter(
+                      "Name",
+                      sap.ui.model.FilterOperator.Contains,
+                      sQuery
+                    ),
+                    new sap.ui.model.Filter(
+                      "Description",
+                      sap.ui.model.FilterOperator.Contains,
+                      sQuery
+                    ),
+                  ],
+                  and: false,
+                }),
+              ]
+            : [];
+        },
+        onPressRefresh: () => {
+          var oTable = this.byId("productsTable");
+          oTable.setBusy(true);
+          this.rebindTable(this.getCurrentFilters());
+          var oBinding = oTable.getBinding("items");
+          oBinding.attachEventOnce("dataReceived", () => {
+            oTable.setBusy(false);
+          });
+        },
+
+        onPressDeleteProduct1: function (oEvent) {
+          let oButton = oEvent.getSource();
+          let oContext = oButton.getBindingContext();
+          if (oContext) {
+            Fragment.load({
+              id: "deleteProductDialog",
+              name: "com.saperp.m.manageproducts.view..fragment.ConfirmDeleteProduct",
+              controller: this,
+            }).then((oDialog) => {
+              this.getView().addDependent(oDialog);
+              oDialog.setBindingContext(oContext);
+              oDialog.open();
+            });
+          }
+        },
+        onConfirmDeleteProduct: function (oEvent) {
+          let oDialog = oEvent.getSource();
+          let oContext = oDialog.getBindingContext();
+          if (oContext) {
+            let sProductId = oContext.getProperty("ID");
+            // Call the delete function here, e.g., using a model
+            // this.getView().getModel().remove("/Products(" + sProductId + ")");
+            console.log("Deleting product with ID:", sProductId);
+            // After deletion, you might want to refresh the table
+            this.rebindTable(this.getCurrentFilters());
+          }
+          oDialog.close();
+        },
+        onCancelDeleteProduct: function (oEvent) {
+          let oDialog = oEvent.getSource();
+          oDialog.close();
         },
       }
     );

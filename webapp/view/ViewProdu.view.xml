@@ -6,6 +6,7 @@
             <OverflowToolbar id="_IDGenOverflowToolbar">
                 <SearchField id="searchField" visible="{viewModel>/searchVisible}" liveChange=".onLiveSearch" width="50%" placeholder="{i18n>searchPlaceholder}" />
                 <CheckBox id="includeSupplier" text="Include Supplier" select=".onSupplierToggle" selected="{viewModel>/includeSupplier}" />
+                <Button id="idBtnRefresh" press="onPressRefresh" text="Refresh"/>
             </OverflowToolbar>
         </subHeader>
 		<HBox id="_IDGenHBox1">
@@ -39,6 +40,9 @@
                     <Column id="dateColumn">
                         <Text id="_IDGenText6" text="{i18n>ReleaseDate}" />
                     </Column>
+                    <Column id="actionsColumn" width="5em">
+                        <Text id="_IDGenText22" text="{i18n>Actions}" />
+                    </Column>
                 </columns>
                 <items>
                     <ColumnListItem id="_IDGenColumnListItem1" press=".onProductClick" type="Navigation">
@@ -52,6 +56,7 @@
                                           text="{path: 'Rating',  formatter: '.formatter.formatRatingText'}" 
                                           state="{path: 'Rating', formatter: '.formatter.formatRatingState'}" />
                             <Text id="_IDGenText10" text="{path: 'ReleaseDate', formatter: '.formatter.formatReleaseDate'}" />
+                            <Button id="btnDeleteProd" icon="sap-icon://delete" press="onPressDeleteProduct" />
                         </cells>
                     </ColumnListItem>
                 </items>
