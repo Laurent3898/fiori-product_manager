@@ -221,7 +221,7 @@ sap.ui.define(
           });
         },
 
-        onPressDeleteProduct1: function (oEvent) {
+        onPressDeleteProduct: function (oEvent) {
           let oButton = oEvent.getSource();
           let oContext = oButton.getBindingContext();
           if (oContext) {
